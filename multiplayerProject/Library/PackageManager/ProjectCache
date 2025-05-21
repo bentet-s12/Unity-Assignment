@@ -1,6 +1,6 @@
 m_ProjectFiles:
   m_ManifestFileStatus:
-    m_FilePath: C:/Users/froz3/multiplayerProject/multiplayerProject/Packages/manifest.json
+    m_FilePath: C:/Users/froz3/Documents/GitHub/Unity-Assignment/multiplayerProject/Packages/manifest.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
@@ -8,7 +8,7 @@ m_ProjectFiles:
       ticks: 638826580110471268
     m_Hash: 3123941530
   m_LockFileStatus:
-    m_FilePath: C:/Users/froz3/multiplayerProject/multiplayerProject/Packages/packages-lock.json
+    m_FilePath: C:/Users/froz3/Documents/GitHub/Unity-Assignment/multiplayerProject/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
@@ -19,7 +19,7 @@ m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
   m_LocalFileStatus: []
-m_ProjectPath: C:/Users/froz3/multiplayerProject/multiplayerProject/Packages
+m_ProjectPath: C:/Users/froz3/Documents/GitHub/Unity-Assignment/multiplayerProject/Packages
 m_EditorVersion: 6000.0.37f1 (090b7797214c)
 m_ResolvedPackages:
 - packageId: com.unity.collab-proxy@2.8.2
@@ -27,7 +27,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 2.8.2
   source: 1
-  resolvedPath: C:\Users\froz3\multiplayerProject\multiplayerProject\Library\PackageCache\com.unity.collab-proxy@c854d1f7d97f
+  resolvedPath: C:\Users\froz3\Documents\GitHub\Unity-Assignment\multiplayerProject\Library\PackageCache\com.unity.collab-proxy@c854d1f7d97f
   assetPath: Packages/com.unity.collab-proxy
   name: com.unity.collab-proxy
   displayName: Version Control
@@ -193,7 +193,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Users\froz3\multiplayerProject\multiplayerProject\Library\PackageCache\com.unity.multiplayer.center@f502d8ac613f
+  resolvedPath: C:\Users\froz3\Documents\GitHub\Unity-Assignment\multiplayerProject\Library\PackageCache\com.unity.multiplayer.center@f502d8ac613f
   assetPath: Packages/com.unity.multiplayer.center
   name: com.unity.multiplayer.center
   displayName: Multiplayer Center
