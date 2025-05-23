@@ -7,8 +7,8 @@ public class SteeringWheelVR : MonoBehaviour
 {
     public Transform wheelVisual;         // rotating wheel model
     public Transform platformToRotate;    // the platform to rotate
-    public float maxRotation = 180f;
-    public float platformSpeed = 45f;
+    public float platformSpeed = 0.05f;
+    public float rotationSensitivity = 0.1f; // for smoother turning
 
     private XRBaseInteractor interactor;
     private Quaternion initialGrabRotation;
@@ -45,25 +45,22 @@ public class SteeringWheelVR : MonoBehaviour
         {
             Quaternion current = interactor.transform.rotation;
             Quaternion delta = current * Quaternion.Inverse(initialGrabRotation);
-            float deltaY = delta.eulerAngles.y;
-            if (deltaY > 180f) deltaY -= 360f;
 
-            wheelAngle = Mathf.Clamp(wheelAngle + deltaY, -maxRotation, maxRotation);
+            // Calculate smooth delta Y angle
+            float deltaY = Mathf.DeltaAngle(0f, delta.eulerAngles.y);
+
+            wheelAngle += deltaY * rotationSensitivity;
             initialGrabRotation = current;
 
-            // Rotate the root around Y axis
+            // Rotate the wheel itself
             transform.localRotation = Quaternion.Euler(0f, wheelAngle, 0f);
 
-            // Rotate platform
+            // Rotate the platform gradually based on current wheel angle
             if (platformToRotate)
             {
-                platformToRotate.Rotate(Vector3.up, (wheelAngle / maxRotation) * platformSpeed * Time.deltaTime);
+                float platformTargetSpeed = (wheelAngle / 360f) * platformSpeed;
+                platformToRotate.Rotate(Vector3.up, platformTargetSpeed * Time.deltaTime);
             }
-
-            // **DO NOT** reset wheelVisual.localRotation here — keep it slanted!
-            // Remove or comment out this line:
-            // wheelVisual.localRotation = Quaternion.identity;
         }
-    }
-
+    }               
 }
