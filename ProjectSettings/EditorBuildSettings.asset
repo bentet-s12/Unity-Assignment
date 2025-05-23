@@ -20,9 +20,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/lobby.unity
     guid: 4711473f07760164ebac46eeecce8d91
+  - enabled: 1
+    path: Assets/Scenes/Game_3.unity
+    guid: a0dde288ce874484aa6a7621219fa4a3
   m_configObjects:
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: e3aee76b9372917449aef639e2f74814,
-      type: 2}
-    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 87b413c5a910b15498a98200731b1754,
-      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: e3aee76b9372917449aef639e2f74814, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 87b413c5a910b15498a98200731b1754, type: 2}
   m_UseUCBPForAssetBundles: 0
