@@ -1,54 +1,84 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CharacterControl : MonoBehaviour
 {
-    [Header("Components")]
-    public CharacterController characterController;
-    public Animator animator;
-    public Transform xrRigCamera;
-
     [Header("XR Input Actions")]
-    public InputActionProperty moveInput;       // Vector2: primary2DAxis
-    public InputActionProperty axisClickInput;  // Button: primary2DAxisClick
+    public InputActionProperty moveInput;
 
-    [Header("Movement Settings")]
-    public float walkSpeed = 1.5f;
-    public float sprintSpeed = 3f;
+    [Header("Animation")]
+    public Animator animator;
+    public float deadzone = 0.15f;
 
-    [Header("Input Smoothing")]
+    [Header("Tracking References")]
+    public Transform headset; // Main Camera under XR Origin
+
+    [Header("Smoothing")]
     public float smoothTime = 0.1f;
+
+    [Header("Offset")]
+    public Vector3 positionOffset = new Vector3(0f, -1.5f, -0.5f); // e.g., 1.5m below and 0.5m behind headset
 
     private float smoothedSpeed = 0f;
     private float speedVelocity = 0f;
+    private Vector3 lastHeadPosition;
 
     void Start()
     {
         moveInput.action.Enable();
-        axisClickInput.action.Enable();
+        lastHeadPosition = headset.position;
     }
 
     void Update()
     {
+        // 1. Joystick input
         Vector2 input = moveInput.action.ReadValue<Vector2>();
-        bool isSprinting = axisClickInput.action.IsPressed();
+        float joystickMagnitude = input.magnitude;
 
-        // Get movement direction relative to headset
-        Vector3 forward = new Vector3(xrRigCamera.forward.x, 0, xrRigCamera.forward.z).normalized;
-        Vector3 right = new Vector3(xrRigCamera.right.x, 0, xrRigCamera.right.z).normalized;
-        Vector3 move = (forward * input.y + right * input.x).normalized;
+        // 2. Headset world movement (XZ only)
+        Vector3 currentHeadPosition = headset.position;
+        Vector3 headDelta = currentHeadPosition - lastHeadPosition;
+        headDelta.y = 0f;
 
-        float currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
-        characterController.Move(move * currentSpeed * Time.deltaTime);
+        float headMovementMagnitude = headDelta.magnitude / Time.deltaTime;
+        lastHeadPosition = currentHeadPosition;
 
-        // Smooth input magnitude to prevent flickering isWalking toggle
-        float targetSpeed = input.magnitude;
-        smoothedSpeed = Mathf.SmoothDamp(smoothedSpeed, targetSpeed, ref speedVelocity, smoothTime);
+        // 3. Combine movement input
+        float totalMovement = Mathf.Max(joystickMagnitude, headMovementMagnitude);
 
-        float deadzone = 0.15f;
+        // Smooth total movement
+        if (totalMovement < 0.05f)
+        {
+            smoothedSpeed = 0f;
+            speedVelocity = 0f;
+        }
+        else
+        {
+            smoothedSpeed = Mathf.SmoothDamp(smoothedSpeed, totalMovement, ref speedVelocity, smoothTime);
+        }
+
+        // Trigger animation
         animator.SetBool("isWalking", smoothedSpeed > deadzone);
+        animator.SetBool("isWalkingBackward", input.y < -deadzone && smoothedSpeed > deadzone);
+        animator.SetFloat("walkSpeed", smoothedSpeed);
+    }
 
-        // Optional: uncomment if you want to add sprint bool to animator
-        // animator.SetBool("isSprinting", isSprinting);
+    void LateUpdate()
+    {
+        // Apply position offset relative to headset forward
+        Vector3 offsetWorld = headset.forward * positionOffset.z
+                            + headset.right * positionOffset.x
+                            + Vector3.up * positionOffset.y;
+
+        Vector3 targetPosition = headset.position + offsetWorld;
+        transform.position = new Vector3(targetPosition.x, transform.position.y, targetPosition.z);
+
+        // Face same direction as headset
+        Vector3 lookDir = headset.forward;
+        lookDir.y = 0f;
+        if (lookDir.sqrMagnitude > 0.01f)
+        {
+            transform.forward = lookDir.normalized;
+        }
     }
 }
