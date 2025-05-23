@@ -955,10 +955,10 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: 6af10118-cf2a-463d-8555-6e3ea98ff239
+  cloudProjectId: e3740ced-e5f0-4f77-a222-9e80f0c4e560
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: VR_Assignments
+  projectName: multiplayerProject
   organizationId: bennettsiew
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
