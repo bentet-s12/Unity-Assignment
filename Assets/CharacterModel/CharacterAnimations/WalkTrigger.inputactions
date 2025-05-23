@@ -1,0 +1,76 @@
+{
+    "name": "WalkTrigger",
+    "maps": [
+        {
+            "name": "movement",
+            "id": "da6d1bdb-f3ee-495d-89ca-0088d53e5b63",
+            "actions": [
+                {
+                    "name": "move",
+                    "type": "Value",
+                    "id": "54181181-c7a3-43c8-a627-0cd3f7ee3f5b",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "axisClick",
+                    "type": "Button",
+                    "id": "284a00f8-8446-4c0f-8a28-8c786f472966",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ea24fe20-69de-4494-a604-0e007f363a1f",
+                    "path": "<XRSimulatedController>{LeftHand}/primary2DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "941c532c-e303-4de3-a748-d60393da27a2",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "92f900fa-003d-427e-a2aa-7330265ed1b7",
+                    "path": "<XRSimulatedController>{LeftHand}/primary2DAxisClick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "axisClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2e83c55b-441f-40f5-a4cb-ce3b5d813d39",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "axisClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
