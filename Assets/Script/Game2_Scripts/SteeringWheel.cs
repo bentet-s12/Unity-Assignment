@@ -1,83 +1,69 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-public class SteeringWheel : XRBaseInteractable
+public class SteeringWheelVR : MonoBehaviour
 {
-    [SerializeField] private Transform wheelTransform;
+    public Transform wheelVisual;         // rotating wheel model
+    public Transform platformToRotate;    // the platform to rotate
+    public float maxRotation = 180f;
+    public float platformSpeed = 45f;
 
-    public UnityEvent<float> OnWheelRotated;
+    private XRBaseInteractor interactor;
+    private Quaternion initialGrabRotation;
+    private float wheelAngle = 0f;
 
-    private float currentAngle = 0.0f;
-
-    protected override void OnSelectEntered(SelectEnterEventArgs args)
+    private void OnEnable()
     {
-        base.OnSelectEntered(args);
-        currentAngle = FindWheelAngle();
+        var grab = GetComponent<XRGrabInteractable>();
+        grab.selectEntered.AddListener(OnGrab);
+        grab.selectExited.AddListener(OnRelease);
     }
 
-    protected override void OnSelectExited(SelectExitEventArgs args)
+    private void OnDisable()
     {
-        base.OnSelectExited(args);
-        currentAngle = FindWheelAngle();
+        var grab = GetComponent<XRGrabInteractable>();
+        grab.selectEntered.RemoveListener(OnGrab);
+        grab.selectExited.RemoveListener(OnRelease);
     }
 
-    public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
+    private void OnGrab(SelectEnterEventArgs args)
     {
-        base.ProcessInteractable(updatePhase);
+        interactor = args.interactorObject as XRBaseInteractor;
+        initialGrabRotation = interactor.transform.rotation;
+    }
 
-        if (updatePhase == XRInteractionUpdateOrder.UpdatePhase.Dynamic)
+    private void OnRelease(SelectExitEventArgs args)
+    {
+        interactor = null;
+    }
+
+    private void Update()
+    {
+        if (interactor != null)
         {
-            if (isSelected)
-                RotateWheel();
+            Quaternion current = interactor.transform.rotation;
+            Quaternion delta = current * Quaternion.Inverse(initialGrabRotation);
+            float deltaY = delta.eulerAngles.y;
+            if (deltaY > 180f) deltaY -= 360f;
+
+            wheelAngle = Mathf.Clamp(wheelAngle + deltaY, -maxRotation, maxRotation);
+            initialGrabRotation = current;
+
+            // Rotate the root around Y axis
+            transform.localRotation = Quaternion.Euler(0f, wheelAngle, 0f);
+
+            // Rotate platform
+            if (platformToRotate)
+            {
+                platformToRotate.Rotate(Vector3.up, (wheelAngle / maxRotation) * platformSpeed * Time.deltaTime);
+            }
+
+            // **DO NOT** reset wheelVisual.localRotation here — keep it slanted!
+            // Remove or comment out this line:
+            // wheelVisual.localRotation = Quaternion.identity;
         }
     }
 
-    private void RotateWheel()
-    {
-        // Convert that direction to an angle, then rotation
-        float totalAngle = FindWheelAngle();
-
-        // Apply difference in angle to wheel
-        float angleDifference = currentAngle - totalAngle;
-        wheelTransform.Rotate(transform.forward, -angleDifference, Space.World);
-
-        // Store angle for next process
-        currentAngle = totalAngle;
-        OnWheelRotated?.Invoke(angleDifference);
-    }
-
-    private float FindWheelAngle()
-    {
-        float totalAngle = 0;
-
-        // Combine directions of current interactors
-        foreach (IXRSelectInteractor interactor in interactorsSelecting)
-        {
-            Vector2 direction = FindLocalPoint(interactor.transform.position);
-            totalAngle += ConvertToAngle(direction) * FindRotationSensitivity();
-        }
-
-        return totalAngle;
-    }
-
-    private Vector2 FindLocalPoint(Vector3 position)
-    {
-        // Convert the hand positions to local, so we can find the angle easier
-        return transform.InverseTransformPoint(position).normalized;
-    }
-
-    private float ConvertToAngle(Vector2 direction)
-    {
-        // Use a consistent up direction to find the angle
-        return Vector2.SignedAngle(Vector2.up, direction);
-    }
-
-    private float FindRotationSensitivity()
-    {
-        // Use a smaller rotation sensitivity with two hands
-        return 1.0f / interactorsSelecting.Count;
-    }
 }
