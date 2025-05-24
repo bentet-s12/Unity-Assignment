@@ -11,6 +11,8 @@ TagManager:
   - Destroyer
   - Cube
   - socketgame
+  - FireZone1
+  - FireZone2
   layers:
   - Default
   - TransparentFX
