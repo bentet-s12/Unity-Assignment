@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PuzzleManager : MonoBehaviour
+public class PuzzleMonitorDisplayManager : MonoBehaviour
 {
     public PuzzleSocketValidator[] socketValidators;
 
