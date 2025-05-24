@@ -411,6 +411,11 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 1824984546
       objectReference: {fileID: 0}
+    - target: {fileID: 2808410049059023866, guid: 0267a1d338db2bf4c9625e450bbaaad0,
+        type: 3}
+      propertyPath: allowDifferentScenes
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8647664954492677990, guid: 0267a1d338db2bf4c9625e450bbaaad0,
         type: 3}
       propertyPath: m_Name
