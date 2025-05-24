@@ -1,8 +1,14 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CharacterControl : MonoBehaviour
+public class CharacterControl : NetworkBehaviour
 {
+    private CharacterController _controller;
+    private Camera _camera;
+    private Animator _animator;
+
     [Header("XR Input Actions")]
     public InputActionProperty moveInput;
 
@@ -17,46 +23,61 @@ public class CharacterControl : MonoBehaviour
     public float smoothTime = 0.1f;
 
     [Header("Offset")]
-    public Vector3 positionOffset = new Vector3(0f, -1.5f, -0.5f); // e.g., 1.5m below and 0.5m behind headset
+    public Vector3 positionOffset = new Vector3(0f, -1.5f, -0.5f); // 1.5m below and 0.5m behind headset
 
     private float smoothedSpeed = 0f;
     private float speedVelocity = 0f;
     private Vector3 lastHeadPosition;
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
+        if (!IsOwner) // Disable components for remote players
+        {
+            Camera cam = GetComponentInChildren<Camera>();
+            if (cam != null)
+                cam.enabled = false;
+
+            return;
+        }
+
         moveInput.action.Enable();
 
-        // Auto-assign headset if not set
+        // Auto-assign headset if not manually set
         if (headset == null)
         {
             Camera cam = Camera.main;
             if (cam != null)
             {
                 headset = cam.transform;
-                Debug.Log("Headset assigned automatically from Camera.main.");
+                Debug.Log("Headset auto-assigned from Camera.main");
             }
             else
             {
-                Debug.LogWarning("Headset not assigned and Camera.main not found!");
+                Debug.LogWarning("No headset assigned and Camera.main not found!");
             }
         }
 
         if (headset != null)
-        {
             lastHeadPosition = headset.position;
-        }
+
+        _controller = GetComponent<CharacterController>();
+        _camera = GetComponentInChildren<Camera>();
+        _animator = GetComponentInChildren<Animator>();
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
-        if (headset == null) return;
+        if (!IsOwner || headset == null)
+            return;
 
         // 1. Joystick input
         Vector2 input = moveInput.action.ReadValue<Vector2>();
         float joystickMagnitude = input.magnitude;
 
-        // 2. Headset world movement (XZ only)
+        // 2. Headset movement (XZ only)
         Vector3 currentHeadPosition = headset.position;
         Vector3 headDelta = currentHeadPosition - lastHeadPosition;
         headDelta.y = 0f;
@@ -68,15 +89,9 @@ public class CharacterControl : MonoBehaviour
         float totalMovement = Mathf.Max(joystickMagnitude, headMovementMagnitude);
 
         // Smooth total movement
-        if (totalMovement < 0.05f)
-        {
-            smoothedSpeed = 0f;
-            speedVelocity = 0f;
-        }
-        else
-        {
-            smoothedSpeed = Mathf.SmoothDamp(smoothedSpeed, totalMovement, ref speedVelocity, smoothTime);
-        }
+        smoothedSpeed = (totalMovement < 0.05f)
+            ? 0f
+            : Mathf.SmoothDamp(smoothedSpeed, totalMovement, ref speedVelocity, smoothTime);
 
         // Trigger animation
         animator.SetBool("isWalking", smoothedSpeed > deadzone);
@@ -86,9 +101,10 @@ public class CharacterControl : MonoBehaviour
 
     void LateUpdate()
     {
-        if (headset == null) return;
+        if (!IsOwner || headset == null)
+            return;
 
-        // Apply position offset relative to headset forward
+        // Apply offset relative to headset orientation
         Vector3 offsetWorld = headset.forward * positionOffset.z
                             + headset.right * positionOffset.x
                             + Vector3.up * positionOffset.y;
@@ -96,7 +112,7 @@ public class CharacterControl : MonoBehaviour
         Vector3 targetPosition = headset.position + offsetWorld;
         transform.position = new Vector3(targetPosition.x, transform.position.y, targetPosition.z);
 
-        // Face same direction as headset
+        // Align body forward to headset forward
         Vector3 lookDir = headset.forward;
         lookDir.y = 0f;
         if (lookDir.sqrMagnitude > 0.01f)
