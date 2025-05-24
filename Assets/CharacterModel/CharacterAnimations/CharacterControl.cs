@@ -1,8 +1,14 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CharacterControl : MonoBehaviour
+public class CharacterControl : NetworkBehaviour
 {
+    private CharacterController _controller;
+    private Camera _camera;
+    private Animator _animator;
+
     [Header("XR Input Actions")]
     public InputActionProperty moveInput;
 
@@ -23,14 +29,35 @@ public class CharacterControl : MonoBehaviour
     private float speedVelocity = 0f;
     private Vector3 lastHeadPosition;
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
         moveInput.action.Enable();
         lastHeadPosition = headset.position;
+
+        _controller = GetComponent<CharacterController>();
+        _camera = GetComponentInChildren<Camera>();
+        _animator = GetComponentInChildren<Animator>();
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        if (!IsOwner)
+        {
+            _camera.enabled = false;
+        }
+    }
+    void Start()
+    {
+        
     }
 
     void Update()
     {
+        if (!IsOwner)
+        {
+            return;
+            
+        }
         // 1. Joystick input
         Vector2 input = moveInput.action.ReadValue<Vector2>();
         float joystickMagnitude = input.magnitude;
