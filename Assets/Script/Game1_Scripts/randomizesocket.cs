@@ -22,7 +22,7 @@ public class randomizesocket : MonoBehaviour
     public GameObject key;
 
     public float socketCooldown = 1f;
-    public float autoResetTime = 3f;
+    public float autoResetTime = 5f;
 
     private List<GameObject> spawned = new List<GameObject>();
     private List<XRSocketInteractor> correctSockets = new List<XRSocketInteractor>();
@@ -35,7 +35,7 @@ public class randomizesocket : MonoBehaviour
 
     void Start()
     {
-       // scorescript = FindAnyObjectByType<ScoreManagerC>();
+        // scorescript = FindAnyObjectByType<ScoreManagerC>();
         // Register removal event listeners
         foreach (var socket in allSockets)
         {
@@ -43,7 +43,9 @@ public class randomizesocket : MonoBehaviour
             {
                 OnObjectRemoved(socket);
             });
+
         }
+        startgame();
     }
 
     public void startgame()
@@ -88,7 +90,7 @@ public class randomizesocket : MonoBehaviour
             availableIndices.RemoveAt(randomIndex);
 
             correctSockets.Add(allSockets[selectedIndex]);
-
+           
             GameObject indicator = indicatorBlocks[selectedIndex];
             if (indicator.TryGetComponent<Renderer>(out Renderer rend))
             {
@@ -98,6 +100,10 @@ public class randomizesocket : MonoBehaviour
         }
 
         Debug.Log($"Correct sockets this round: {correctSockets.Count}");
+       for (int i = 0;i < correctSockets.Count; i++)
+        {
+            Debug.Log(correctSockets[i].gameObject.name);
+        }
     }
 
     private void ClearSocket()
