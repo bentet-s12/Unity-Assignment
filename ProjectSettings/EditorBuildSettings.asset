@@ -6,8 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+<<<<<<< HEAD
     path: Assets/Scenes/Game_3.unity
     guid: a0dde288ce874484aa6a7621219fa4a3
+=======
+    path: Assets/Scenes/lobby.unity
+    guid: be95fb34a3ca05e4791b7a4e67c9f0fc
+>>>>>>> 8af10b99e7601c33903087816f819933fdb88988
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: e3aee76b9372917449aef639e2f74814,
       type: 2}
