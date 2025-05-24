@@ -463,7 +463,7 @@ GameObject:
   - component: {fileID: 5451413520661513083}
   - component: {fileID: 4661583680750914799}
   - component: {fileID: 6205906425289557929}
-  - component: {fileID: 7354887176515316701}
+  - component: {fileID: 4085479509964280857}
   m_Layer: 0
   m_Name: XR_Avatar
   m_TagString: Player
@@ -807,7 +807,7 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
---- !u!114 &7354887176515316701
+--- !u!114 &4085479509964280857
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -816,11 +816,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1741550337832451666}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14c192444d30d114295ea623d9dd44d4, type: 3}
+  m_Script: {fileID: 11500000, guid: c156e0102a8d0514b91acc63faadec62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  respawnPoint1: {fileID: 0}
-  respawnPoint2: {fileID: 0}
+  ShowTopMostFoldoutHeaderGroup: 1
+  head: {fileID: 0}
+  leftHand: {fileID: 0}
+  rightHand: {fileID: 0}
+  m_UpdateObjectName: 1
+  m_handsObjects: []
+  m_PlayerNameTag: {fileID: 0}
 --- !u!1 &1849986467010884903
 GameObject:
   m_ObjectHideFlags: 0
