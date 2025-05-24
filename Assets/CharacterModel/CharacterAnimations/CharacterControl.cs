@@ -17,7 +17,7 @@ public class CharacterControl : NetworkBehaviour
     public float deadzone = 0.15f;
 
     [Header("Tracking References")]
-    public Transform headset; // Main Camera under XR Origin
+    [SerializeField] private Transform headset; // Main Camera under XR Origin
 
     [Header("Smoothing")]
     public float smoothTime = 0.1f;
@@ -31,29 +31,27 @@ public class CharacterControl : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsOwner) // Disable components for remote players
+        if (!IsOwner)
         {
-            Camera cam = GetComponentInChildren<Camera>();
-            if (cam != null)
-                cam.enabled = false;
-
+            var remoteCam = GetComponentInChildren<Camera>();
+            if (remoteCam != null)
+                remoteCam.enabled = false;
             return;
         }
 
         moveInput.action.Enable();
 
-        // Auto-assign headset if not manually set
         if (headset == null)
         {
-            Camera cam = Camera.main;
+            Camera cam = GetComponentInChildren<Camera>();
             if (cam != null)
             {
                 headset = cam.transform;
-                Debug.Log("Headset auto-assigned from Camera.main");
+                Debug.Log("Headset auto-assigned from child camera.");
             }
             else
             {
-                Debug.LogWarning("No headset assigned and Camera.main not found!");
+                Debug.LogWarning("No headset assigned or found in children!");
             }
         }
 
@@ -63,9 +61,6 @@ public class CharacterControl : NetworkBehaviour
         _controller = GetComponent<CharacterController>();
         _camera = GetComponentInChildren<Camera>();
         _animator = GetComponentInChildren<Animator>();
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
@@ -73,11 +68,9 @@ public class CharacterControl : NetworkBehaviour
         if (!IsOwner || headset == null)
             return;
 
-        // 1. Joystick input
         Vector2 input = moveInput.action.ReadValue<Vector2>();
         float joystickMagnitude = input.magnitude;
 
-        // 2. Headset movement (XZ only)
         Vector3 currentHeadPosition = headset.position;
         Vector3 headDelta = currentHeadPosition - lastHeadPosition;
         headDelta.y = 0f;
@@ -85,15 +78,12 @@ public class CharacterControl : NetworkBehaviour
         float headMovementMagnitude = headDelta.magnitude / Time.deltaTime;
         lastHeadPosition = currentHeadPosition;
 
-        // 3. Combine movement input
         float totalMovement = Mathf.Max(joystickMagnitude, headMovementMagnitude);
 
-        // Smooth total movement
         smoothedSpeed = (totalMovement < 0.05f)
             ? 0f
             : Mathf.SmoothDamp(smoothedSpeed, totalMovement, ref speedVelocity, smoothTime);
 
-        // Trigger animation
         animator.SetBool("isWalking", smoothedSpeed > deadzone);
         animator.SetBool("isWalkingBackward", input.y < -deadzone && smoothedSpeed > deadzone);
         animator.SetFloat("walkSpeed", smoothedSpeed);
@@ -104,7 +94,6 @@ public class CharacterControl : NetworkBehaviour
         if (!IsOwner || headset == null)
             return;
 
-        // Apply offset relative to headset orientation
         Vector3 offsetWorld = headset.forward * positionOffset.z
                             + headset.right * positionOffset.x
                             + Vector3.up * positionOffset.y;
@@ -112,7 +101,6 @@ public class CharacterControl : NetworkBehaviour
         Vector3 targetPosition = headset.position + offsetWorld;
         transform.position = new Vector3(targetPosition.x, transform.position.y, targetPosition.z);
 
-        // Align body forward to headset forward
         Vector3 lookDir = headset.forward;
         lookDir.y = 0f;
         if (lookDir.sqrMagnitude > 0.01f)
