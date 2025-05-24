@@ -1,42 +1,41 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
-using System.Collections.Generic;
 
 public class SocketGame : MonoBehaviour
 {
-    // Sockets and Cube
-    public GameObject[] sockets; // Array of the three sockets
-    public GameObject indicatorCube; // Cube that will show red/green
-    public GameObject objectToPlace; // Object that the player will place
-    private GameObject correctSocket; // Randomly selected socket
-
-    public Transform restingPlace;
-
-    // Timing control
+    public GameObject[] indicatorblocks;
+    public GameObject[] sockets;
+    public GameObject indicatorCube;
+    public GameObject objectToPlace;
     public XRInteractionManager interactionManager;
+   
+
+    private List<GameObject> correctSockets = new List<GameObject>();
+    private List<GameObject> correctBlocks = new List<GameObject>();
 
 
     void Start()
     {
         Debug.Log("New Round Starting...");
-        // Start a new round
         StartCoroutine(RoundDelay());
-        int randomIndex = Random.Range(0, sockets.Length);
-        correctSocket = sockets[randomIndex];
+        SelectCorrectSockets();
     }
 
     void StartNewRound()
     {
-        Debug.Log("New Round Starting...");
+        foreach (GameObject block in indicatorblocks)
+        {
+            block.GetComponent<Renderer>().material.color = Color.white;
+        }
 
+        Debug.Log("New Round Starting...");
         StartCoroutine(RoundDelay());
 
-        // Randomly select a new correct socket
-        int randomIndex = Random.Range(0, sockets.Length);
-        correctSocket = sockets[randomIndex];
+        SelectCorrectSockets();
 
         var interactable = objectToPlace.GetComponent<XRGrabInteractable>();
         if (interactable != null && interactable.isSelected)
@@ -48,36 +47,47 @@ public class SocketGame : MonoBehaviour
             }
         }
 
-        // Temporarily disable interactable and collider to prevent re-snapping
         objectToPlace.GetComponent<Collider>().enabled = false;
         interactable.enabled = false;
 
-        // Move object to starting position
-        if (restingPlace != null)
-        {
-            transform.SetParent(null);
-            transform.position = restingPlace.position;
-        }
-        else
-        {
-            Debug.LogWarning("Resting place not assigned!");
-        }
 
-        Debug.Log("Resetting to: " + restingPlace.position);
-        // Reset weapon to resting place
-        objectToPlace.transform.SetPositionAndRotation(restingPlace.position, restingPlace.rotation);
-
-        // Reset indicator color
         indicatorCube.GetComponent<Renderer>().material.color = Color.white;
-
-        // Re-enable after short delay
         StartCoroutine(ReenableAfterDelay(interactable, 0.5f));
     }
 
-
-    IEnumerator RoundDelay()
+    void SelectCorrectSockets()
     {
-        yield return new WaitForSeconds(1);
+        correctSockets.Clear();
+        correctBlocks.Clear();
+
+        List<int> availableIndices = new List<int>();
+        for (int i = 0; i < sockets.Length; i++)
+        {
+            availableIndices.Add(i);
+        }
+
+        int count = Random.Range(2, 4);
+        for (int i = 0; i < count; i++)
+        {
+            int randomIndex = Random.Range(0, availableIndices.Count);
+            int selected = availableIndices[randomIndex];
+            correctSockets.Add(sockets[selected]);
+            correctBlocks.Add(indicatorblocks[selected]);
+            availableIndices.RemoveAt(randomIndex);
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+
+            correctBlocks[i].GetComponent<Renderer>().material.color = Color.green;
+
+            Debug.Log($"Correct sockets this round: {correctSockets.Count}");
+        }
+        }
+
+        IEnumerator RoundDelay()
+    {
+        yield return new WaitForSeconds(3);
     }
 
     IEnumerator ReenableAfterDelay(XRGrabInteractable interactable, float delay)
@@ -87,21 +97,20 @@ public class SocketGame : MonoBehaviour
         interactable.enabled = true;
     }
 
-
     public void CheckObjectPlacement(GameObject socketUsed, GameObject placedObject)
     {
         if (placedObject == objectToPlace)
         {
-            if (socketUsed == correctSocket)
+            if (correctSockets.Contains(socketUsed))
             {
                 indicatorCube.GetComponent<Renderer>().material.color = Color.green;
-                Invoke(nameof(StartNewRound), 1f);
             }
             else
             {
                 indicatorCube.GetComponent<Renderer>().material.color = Color.red;
-                Invoke(nameof(StartNewRound), 1f);
             }
+
+            Invoke(nameof(StartNewRound), 1f);
         }
     }
 }
