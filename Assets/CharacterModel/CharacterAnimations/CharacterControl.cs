@@ -26,11 +26,32 @@ public class CharacterControl : MonoBehaviour
     void Start()
     {
         moveInput.action.Enable();
-        lastHeadPosition = headset.position;
+
+        // Auto-assign headset if not set
+        if (headset == null)
+        {
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                headset = cam.transform;
+                Debug.Log("Headset assigned automatically from Camera.main.");
+            }
+            else
+            {
+                Debug.LogWarning("Headset not assigned and Camera.main not found!");
+            }
+        }
+
+        if (headset != null)
+        {
+            lastHeadPosition = headset.position;
+        }
     }
 
     void Update()
     {
+        if (headset == null) return;
+
         // 1. Joystick input
         Vector2 input = moveInput.action.ReadValue<Vector2>();
         float joystickMagnitude = input.magnitude;
@@ -65,6 +86,8 @@ public class CharacterControl : MonoBehaviour
 
     void LateUpdate()
     {
+        if (headset == null) return;
+
         // Apply position offset relative to headset forward
         Vector3 offsetWorld = headset.forward * positionOffset.z
                             + headset.right * positionOffset.x
