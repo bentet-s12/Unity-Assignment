@@ -1971,6 +1971,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 874452183138526564, guid: 3967f87296c892e40b57e37bc8601550,
+        type: 3}
+      propertyPath: m_NetworkConfig.PlayerPrefab
+      value: 
+      objectReference: {fileID: 1741550337832451666, guid: d05c0271dad70b243bcb3634f561f85c,
+        type: 3}
     - target: {fileID: 4145292139985048678, guid: 3967f87296c892e40b57e37bc8601550,
         type: 3}
       propertyPath: m_RootOrder
@@ -2502,6 +2508,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8383550644211975205}
     m_Modifications:
+    - target: {fileID: -5455544248788724216, guid: d05c0271dad70b243bcb3634f561f85c,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 308915909
+      objectReference: {fileID: 0}
+    - target: {fileID: -5455544248788724216, guid: d05c0271dad70b243bcb3634f561f85c,
+        type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5455544248788724216, guid: d05c0271dad70b243bcb3634f561f85c,
+        type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 3178127950
+      objectReference: {fileID: 0}
     - target: {fileID: 5226543248201106102, guid: d05c0271dad70b243bcb3634f561f85c,
         type: 3}
       propertyPath: m_LocalPosition.y
