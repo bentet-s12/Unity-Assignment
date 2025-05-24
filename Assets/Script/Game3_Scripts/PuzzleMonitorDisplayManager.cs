@@ -4,32 +4,26 @@ public class PuzzleMonitorDisplayManager : MonoBehaviour
 {
     public PuzzleSocketValidator[] socketValidators;
 
-    [Header("Monitor 1")]
-    public Renderer monitorRenderer1;
-    public Material finalImageMaterial1;
-
-    [Header("Monitor 2")]
-    public Renderer monitorRenderer2;
-    public Material finalImageMaterial2;
-
-    public Material defaultMaterial;
+    [Header("Monitor")]
+    public Renderer monitorRenderer;          // One monitor only
+    public Material finalImageMaterial;       // The image to show when puzzle is done
+    public Material defaultMaterial;          // Optional: blank/default material
 
     private bool imageShown = false;
 
     void Start()
     {
-        if (monitorRenderer1 && defaultMaterial)
-            monitorRenderer1.material = defaultMaterial;
-
-        if (monitorRenderer2 && defaultMaterial)
-            monitorRenderer2.material = defaultMaterial;
+        if (monitorRenderer && defaultMaterial)
+            monitorRenderer.material = defaultMaterial;
     }
 
     void Update()
     {
-        if (!imageShown && AllSocketsCorrect())
+        if (imageShown) return;
+
+        if (AllSocketsCorrect())
         {
-            ShowFinalImages();
+            ShowFinalImage();
             imageShown = true;
         }
     }
@@ -44,14 +38,11 @@ public class PuzzleMonitorDisplayManager : MonoBehaviour
         return true;
     }
 
-    void ShowFinalImages()
+    void ShowFinalImage()
     {
-        if (monitorRenderer1 && finalImageMaterial1)
-            monitorRenderer1.material = finalImageMaterial1;
+        if (monitorRenderer && finalImageMaterial)
+            monitorRenderer.material = finalImageMaterial;
 
-        if (monitorRenderer2 && finalImageMaterial2)
-            monitorRenderer2.material = finalImageMaterial2;
-
-        Debug.Log("✅ All puzzle pieces correct. Both images displayed.");
+        Debug.Log($"{name}: ✅ Puzzle complete — monitor now shows final image.");
     }
 }
